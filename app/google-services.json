@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "512924793657",
+    "firebase_url": "https://uniatm-d6f26.firebaseio.com",
+    "project_id": "uniatm-d6f26",
+    "storage_bucket": "uniatm-d6f26.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:512924793657:android:0166af5d48096d9128c6e8",
+        "android_client_info": {
+          "package_name": "com.android.application"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "512924793657-uvh8hp7p7bqi088tv6atm8hmvpr2vqk9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.android.application",
+            "certificate_hash": "28527ddbc435f0398d00744ad2a65eabc650c48d"
+          }
+        },
+        {
+          "client_id": "512924793657-agk1ursaunjrm1pfblmpol6ic1g4lbh7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCg0vqIRw8EqRh-amdfHBnF30efXLJeZkw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "512924793657-agk1ursaunjrm1pfblmpol6ic1g4lbh7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
