@@ -40,7 +40,7 @@ import Form from "@screens/form";
 import Notelgbl from "@screens/form/noteligible";
 import File from "@screens/Fileupload";
 import collegeByCategory from "@screens/collegeByCategory";
-import Chat from "@screens/chat";
+
 
 
 
@@ -220,9 +220,6 @@ const StackNavigator = createStackNavigator(
          },
          collegeByCategory:{
             screen:collegeByCategory  
-         },
-         Chat:{
-            screen: Chat
          }
     },
     {
