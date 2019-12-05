@@ -3,7 +3,7 @@ import { Images } from "@config";
 const MessagesData = [
     {
         id: "0",
-        user: "Rabina Karki",
+        user: "Safi khan",
         message: "Its time to build a difference ...",
         image: Images.avata1,
         date: "Dec 11, 2019"

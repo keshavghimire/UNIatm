@@ -6,43 +6,112 @@ import { StyleSheet,
   PixelRatio,
   TouchableOpacity,
   Image,
+  AsyncStorage,
+  ActivityIndicator,
   PermissionsAndroid } from 'react-native';
   import DocumentPicker from 'react-native-document-picker';
   import ImagePicker from 'react-native-image-picker';
 import styles from "./styles";
+import axios from 'axios';
 
 
-
+const AunthOne ='https://crm.uniatm.org/api/v1/apply/file'
+const statusUrl ='http://crm.uniatm.org/api/v1/apply/file/status'
 
  class HelloWorldApp extends Component {
+ 
    state={
-       name:[{name:"slc"},{name:"+2"},{name:"passport"},{name:"cv"}],
+       name:[{name:"slc"}
+      //  ,{name:"+2"},{name:"passport"},{name:"cv"}
+      ],
        slc:'',
        plustwo:'',
        cv:'',
        passport:'',
-       icon:"times-circle"
-
-
-
-      
+       icon:"times-circle",
+       data:'',
+       checkStatus: false ,
+       loadingStatus: true
+ 
 
    }
+   componentDidMount(){
+    this._retrieveData();
+    
+    
+}
+stausCheck=(idValue)=>{
+  
+  const data={
+    user_id:idValue
+  }
+  axios.post(statusUrl,data).then((response) => {
+  
+   const responseData = JSON.parse(JSON.stringify(response))
+   console.log("response data",responseData)
+    this.setState({
+      loadingStatus:false,
+      checkStatus:responseData.data.status
+    })
+
+   
+
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+}
+
+
+_retrieveData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('userData');
+      if (value !== null) {
+       const jsonValue = JSON.parse(value);
+       const id = jsonValue.ids;
+       this.stausCheck(id);
+
+
+       this.setState({
+            data:JSON.parse(value)})
+      }
+    } catch (error) {
+      // Error retrieving data
+     
+    }
+  };
+ 
    onSignUp(){
     const { navigation } = this.props;
-    axios.post('https://crm.uniatm.org/api/v1/apply/file', {
-        
-        
+      const data = new FormData();
+        data.append('user_id',8); // you can append anyone.
+        data.append('slc_file', {
+          uri: this.state.slc,
+          type: 'image/jpeg', // or photo.type
+          name: 'slc'
+          });
+        data.append('plus_two_file	', {
+          uri: this.state.plustwo,
+          type: 'image/jpeg', // or photo.type
+          name: 'plusTwo'
+          });
+        data.append('cv	', {
+          uri: this.state.cv,
+          type: 'image/jpeg', // or photo.type
+          name: 'cv'
+          });
+        data.append('other_one	', {
+          uri: this.state.passport,
+          type: 'image/jpeg', // or photo.type
+          name: 'passport'
+          });
 
-
-        
-       
-  })
-  .then(function (response) {
-    // console.log(response);
-    const token = response.data.data.token
+          // console.log("pass valur",data)
+    axios.post(AunthOne,data).then(function (response) {
+    console.log("file text",response);
+      const token = response.data.data.token
       AsyncStorage.setItem('tokenSignup',token)
-    navigation.navigate("SignIn");
+     
 
   })
   .catch(function (error) {
@@ -201,6 +270,23 @@ async selectOneFile(value,index) {
   render() {
     // console.log("data",this.state.data)
     const { navigation } = this.props;
+    if(this.state.loadingStatus){
+      return(
+        <ActivityIndicator size="large"></ActivityIndicator>
+      )
+    }
+    else if(this.state.checkStatus){
+      return(
+        <TouchableOpacity
+          onPress={()=>
+          this.props.navigation.navigate("Form") }
+          style={styles.submit}>
+                  <Text style={{color:'white'}}>
+                     Next Step 
+                   </Text>
+          </TouchableOpacity>
+      )
+    }else{
     return (
       
       <View style={styles.container}>
@@ -243,15 +329,18 @@ async selectOneFile(value,index) {
             )    
          }) 
          }  
+
         <TouchableOpacity
-        onPress={()=>  navigation.navigate("Form")}
-        style={styles.submit}>
-                  <Text style={{color:'white'}}>
-                     Next Step 
-                   </Text>
-        </TouchableOpacity>  
+          onPress={()=> this.onSignUp()   }
+          style={styles.submit}>
+                    <Text style={{color:'white'}}>
+                      upload
+                    </Text>
+        </TouchableOpacity> 
+        
       </View>
     )
+  }
  }};
 export default HelloWorldApp
 

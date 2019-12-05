@@ -13,6 +13,7 @@ import { Header, SafeAreaView, Icon, Text } from "@components";
 import * as Utils from "@utils";
 import styles from "./styles";
 
+
 export default class Messages extends Component {
     constructor(props) {
         super(props);

@@ -10,11 +10,11 @@ import { StyleSheet,
   PermissionsAndroid } from 'react-native';
   import DocumentPicker from 'react-native-document-picker';
   import ImagePicker from 'react-native-image-picker';
-import styles from "./styles";
+  import styles from "./styles";
 
 
 
-
+  const AunthOne ='https://crm.uniatm.org/api/v1/apply/file';
  class HelloWorldApp extends Component {
    state={
        name:[{name:"slc"},{name:"+2"},{name:"passport"},
@@ -29,29 +29,60 @@ import styles from "./styles";
        other:'',
        icon:"times-circle"
  }
-   onSignUp(){
-    const { navigation } = this.props;
-    axios.post('https://crm.uniatm.org/api/v1/apply/file', {
-      user_id:this.state.user,
-      slc_file:this.state.slc,	
-      plus_two_file:this.state.plustwo,	
-      cv:this.state.cv,
-      other_one:this.state.other,	  
-      other_two:this.state.Photo	
+ componentDidMount(){
+  this._retrieveData();
+  
+}
+_retrieveData = async () => {
+  try {
+    const value = await AsyncStorage.getItem('userData');
+    if (value !== null) {
+      // alert(value)
+     this.setState({
+          data:JSON.parse(value)})
+    }
+  } catch (error) {
+    // Error retrieving data
+   
+  }
+};
 
-        
-       
-  })
-  .then(function (response) {
-    // console.log(response);
-     const token = response.data.data.token
-      AsyncStorage.setItem('tokenSignup',token)
-    navigation.navigate("SignIn");
+ onSignUp(){
+  const { navigation } = this.props;
+    const data = new FormData();
+      data.append('user_id',8); // you can append anyone.
+      data.append('slc_file', {
+        uri: this.state.slc,
+        type: 'image/jpeg', // or photo.type
+        name: 'slc'
+        });
+      data.append('plus_two_file	', {
+        uri: this.state.plustwo,
+        type: 'image/jpeg', // or photo.type
+        name: 'plusTwo'
+        });
+      data.append('cv	', {
+        uri: this.state.cv,
+        type: 'image/jpeg', // or photo.type
+        name: 'cv'
+        });
+      data.append('other_one	', {
+        uri: this.state.passport,
+        type: 'image/jpeg', // or photo.type
+        name: 'passport'
+        });
 
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
+        // console.log("pass valur",data)
+  axios.post(AunthOne,data).then(function (response) {
+  console.log("file text",response);
+    const token = response.data.data.token
+    AsyncStorage.setItem('tokenSignup',token)
+    navigation.navigate("Notelgbl");
+
+})
+.catch(function (error) {
+  console.log(error);
+});
 }
 
 
@@ -61,24 +92,8 @@ async selectOneFile(value,index) {
   try {
     const res = await DocumentPicker.pick({
       type: [DocumentPicker.types.allFiles],
-      //There can me more options as well
-      // DocumentPicker.types.allFiles
-      // DocumentPicker.types.images
-      // DocumentPicker.types.plainText
-      // DocumentPicker.types.audio
-      // DocumentPicker.types.pdf
     });
     let data = res.uri
-    
-    //Printing the log realted to the file
-    console.log('res : ' + JSON.stringify(res));
-    console.log('URI : ' + res.uri);
-    console.log('Type : ' + res.type);
-    console.log('File Name : ' + res.name);
-    console.log('File Size : ' + res.size);
-    //Setting the state to show single file attributes
-    // 
-    
     let array = this.state.name[index] ;
     array.status = "true"
     this.state.name = Object.assign([],this.state.name)     
@@ -285,8 +300,8 @@ async selectOneFile(value,index) {
                     </Text>
             </TouchableOpacity>
             <TouchableOpacity 
-             onPress={()=>  navigation.navigate("Chat")}
-            style={styles.submit}>
+             onPress={()=> this.onSignUp()}
+              style={styles.submit}>
                     <Text style={{color:'white'}}>
                         Next Step 
                     </Text>
