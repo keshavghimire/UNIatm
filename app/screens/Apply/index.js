@@ -32,7 +32,7 @@ const statusUrl ='http://crm.uniatm.org/api/v1/apply/file/status'
        data:'',
        checkStatus: false ,
        loadingStatus: true,
-       
+       stau:''
  
 
    }
