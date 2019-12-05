@@ -31,7 +31,8 @@ const statusUrl ='http://crm.uniatm.org/api/v1/apply/file/status'
        icon:"times-circle",
        data:'',
        checkStatus: false ,
-       loadingStatus: true
+       loadingStatus: true,
+       stau:''
  
 
    }
