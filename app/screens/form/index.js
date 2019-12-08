@@ -1,88 +1,117 @@
-
 import React, { Component } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import { StyleSheet,
+import { 
+  StyleSheet,
   Text,
   View,
   PixelRatio,
-  TouchableOpacity,ScrollView,
+  TouchableOpacity,
   Image,
+  AsyncStorage,
+  ActivityIndicator,
   PermissionsAndroid } from 'react-native';
   import DocumentPicker from 'react-native-document-picker';
   import ImagePicker from 'react-native-image-picker';
   import styles from "./styles";
+  import axios from 'axios';
 
 
+const AunthOne ='https://crm.uniatm.org/api/v1/apply/file'
+const statusUrl ='http://crm.uniatm.org/api/v1/apply/file/status'
 
-  const AunthOne ='https://crm.uniatm.org/api/v1/apply/file';
  class HelloWorldApp extends Component {
+ 
    state={
-       name:[{name:"slc"},{name:"+2"},{name:"passport"},
-       {name:"cv"},{name:"Bachelor"},{name:"master"},{name:"Photo"},{name:"other"}],
-       slc:'',
-       plustwo:'',
-       cv:'',
-       passport:'',
-       Bachelor:'',
-       master:'',
-       Photo:'',
-       other:'',
-       icon:"times-circle"
- }
- componentDidMount(){
-  this._retrieveData();
-  
+      name:[
+        // {name:"slc"},
+        {name:"+2"},{name:"passport"},
+      // {name:"cv"},{name:"Bachelor"},{name:"master"},{name:"Photo"},{name:"other"}
+    ],
+      slc:'',
+      plustwo:'',
+      cv:'',
+      passport:'',
+      Bachelor:'',
+      master:'',
+      Photo:'',
+      other:'',
+      icon:"times-circle",
+       data:'',
+       checkStatus:false ,
+       loadingStatus: true,
+       stau:''
+ 
+
+   }
+   componentDidMount(){
+    this._retrieveData();
+    
+    
 }
-_retrieveData = async () => {
-  try {
-    const value = await AsyncStorage.getItem('userData');
-    if (value !== null) {
-      // alert(value)
-     this.setState({
-          data:JSON.parse(value)})
-    }
-  } catch (error) {
-    // Error retrieving data
-   
+stausCheck=(idValue)=>{
+  
+  const data={
+    user_id:idValue
   }
-};
+  axios.post(statusUrl,data).then((response) => {
+  
+   const responseData = JSON.parse(JSON.stringify(response))
+   console.log("response data",responseData)
+    this.setState({
+      loadingStatus:false,
+      checkStatus:true
+    })
 
- onSignUp(){
-  const { navigation } = this.props;
-    const data = new FormData();
-      data.append('user_id',8); // you can append anyone.
-      data.append('slc_file', {
-        uri: this.state.slc,
-        type: 'image/jpeg', // or photo.type
-        name: 'slc'
-        });
-      data.append('plus_two_file	', {
-        uri: this.state.plustwo,
-        type: 'image/jpeg', // or photo.type
-        name: 'plusTwo'
-        });
-      data.append('cv	', {
-        uri: this.state.cv,
-        type: 'image/jpeg', // or photo.type
-        name: 'cv'
-        });
-      data.append('other_one	', {
-        uri: this.state.passport,
-        type: 'image/jpeg', // or photo.type
-        name: 'passport'
-        });
+   
 
-        // console.log("pass valur",data)
-  axios.post(AunthOne,data).then(function (response) {
-  console.log("file text",response);
-    const token = response.data.data.token
-    AsyncStorage.setItem('tokenSignup',token)
-    navigation.navigate("Notelgbl");
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+}
 
-})
-.catch(function (error) {
-  console.log(error);
-});
+
+_retrieveData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('userData');
+      if (value !== null) {
+       const jsonValue = JSON.parse(value);
+       const id = jsonValue.ids;
+       this.stausCheck(id);
+
+
+       this.setState({
+            data:JSON.parse(value)})
+      }
+    } catch (error) {
+      // Error retrieving data
+     
+    }
+  };
+ 
+   onSignUp(){
+    const { navigation } = this.props;
+      const data = new FormData();
+        data.append('user_id',8); // you can append anyone.
+      
+        data.append('plus_two_file	', {
+          uri: this.state.plustwo,
+          type: 'image/jpeg', // or photo.type
+          name: 'plusTwo'
+          });
+       
+
+          // console.log("pass valur",data)
+    axios.post(AunthOne,data).then(function (response) {
+    console.log("file text",response);
+      const token = response.data.data.token
+      AsyncStorage.setItem('tokenSignup',token)
+     
+
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
 }
 
 
@@ -92,49 +121,65 @@ async selectOneFile(value,index) {
   try {
     const res = await DocumentPicker.pick({
       type: [DocumentPicker.types.allFiles],
+      //There can me more options as well
+      // DocumentPicker.types.allFiles
+      // DocumentPicker.types.images
+      // DocumentPicker.types.plainText
+      // DocumentPicker.types.audio
+      // DocumentPicker.types.pdf
     });
     let data = res.uri
+    
+    //Printing the log realted to the file
+    console.log('res : ' + JSON.stringify(res));
+    console.log('URI : ' + res.uri);
+    console.log('Type : ' + res.type);
+    console.log('File Name : ' + res.name);
+    console.log('File Size : ' + res.size);
+    //Setting the state to show single file attributes
+    // 
+    
     let array = this.state.name[index] ;
     array.status = "true"
     this.state.name = Object.assign([],this.state.name)     
  
                 console.log("array index",array)
 
-                    switch(value){
-                      case "slc":
-                          this.setState({ slc:data });
-                          
-                          break;
-                      case "+2":
-                            this.setState({plustwo:data});
-                            break;
-                      case "cv":
-                          this.setState({ cv:data });
-                          break; 
-                      case "passport":
-                          this.setState({ passport:data });
-                          
-                          break;
-                     case "Bachelor":
-                          this.setState({ Bachelor:data });
-                            
-                          break; 
-                     case "master":
-                          this.setState({ master:data });
-                          break; 
-                      case "Photo":
-                          this.setState({ Photo:data });
-                          
-                          break;
-                     case "other":
-                          this.setState({ other:data });
-                            
-                          break; 
-                          
-                      default:
-                            break;  
-                
-                    }
+                switch(value){
+                  case "slc":
+                      this.setState({ slc:data });
+                      
+                      break;
+                  case "+2":
+                        this.setState({plustwo:data});
+                        break;
+                  case "cv":
+                      this.setState({ cv:data });
+                      break; 
+                  case "passport":
+                      this.setState({ passport:data });
+                      
+                      break;
+                 case "Bachelor":
+                      this.setState({ Bachelor:data });
+                        
+                      break; 
+                 case "master":
+                      this.setState({ master:data });
+                      break; 
+                  case "Photo":
+                      this.setState({ Photo:data });
+                      
+                      break;
+                 case "other":
+                      this.setState({ other:data });
+                        
+                      break; 
+                      
+                  default:
+                        break;  
+            
+                }
 
    
   } catch (err) {
@@ -200,42 +245,41 @@ async selectOneFile(value,index) {
           
           console.log("array index",array)
 
-              switch(value){
-                case "slc":
-                  this.setState({ slc:source });
-                  
-                  break;
-              case "+2":
-                    this.setState({plustwo:source});
-                    break;
-              case "cv":
-                  this.setState({ cv:source });
-                  break; 
-              case "passport":
-                  this.setState({ passport:source });
-                  
-                  break;
-             case "Bachelor":
-                  this.setState({ Bachelor:source });
-                    
-                  break; 
-             case "master":
-                  this.setState({ master:source });
-                  break; 
-              case "Photo":
-                  this.setState({ Photo:source });
-                  
-                  break;
-             case "other":
-                  this.setState({ other:source });
-                    
-                  break; 
-                  
-              default:
-                    break;  
-        
-            }
-
+          switch(value){
+            case "slc":
+              this.setState({ slc:source });
+              
+              break;
+          case "+2":
+                this.setState({plustwo:source});
+                break;
+          case "cv":
+              this.setState({ cv:source });
+              break; 
+          case "passport":
+              this.setState({ passport:source });
+              
+              break;
+         case "Bachelor":
+              this.setState({ Bachelor:source });
+                
+              break; 
+         case "master":
+              this.setState({ master:source });
+              break; 
+          case "Photo":
+              this.setState({ Photo:source });
+              
+              break;
+         case "other":
+              this.setState({ other:source });
+                
+              break; 
+              
+          default:
+                break;  
+    
+        }
             }
         });
         console.log('You can use the camera');
@@ -248,25 +292,60 @@ async selectOneFile(value,index) {
   
 
  
-}   
+}
+   
   render() {
+    // console.log("data",this.state.data)
     const { navigation } = this.props;
+    if(this.state.loadingStatus){
+      return(
+        <ActivityIndicator size="large"></ActivityIndicator>
+      )
+    }
+    else if(this.state.checkStatus== true){
+      return(
+        <TouchableOpacity
+          onPress={()=>
+          this.props.navigation.navigate("Payment") }
+          style={styles.submit}>
+                  <Text style={{color:'white'}}>
+                     Next Step 
+                   </Text>
+          </TouchableOpacity>
+      )
+    }
+    else if(this.state.checkStatus== false){
+      return(
+        <TouchableOpacity
+          onPress={()=>
+          this.props.navigation.navigate("Notelgbl") }
+          style={styles.submit}>
+                  <Text style={{color:'white'}}>
+                     Next Step 
+                   </Text>
+          </TouchableOpacity>
+      )
+    }
+    else{
     return (
       
-      <ScrollView style={styles.container}>
+      <View style={styles.container}>
         <View style={styles.heading}>
           <Text style={{
             fontSize:30,fontWeight:'bold'
           }
-          }>Heading </Text>
+          }>verification 2 </Text>
         </View>
         <View style={styles.description}>
           <Text>Lorem Ipsum is simply dummy text 
             of the printing and typesetting industry. 
-           
-             
+            Lorem Ipsum has been the industry's standard
+             dummy text ever since the 1500s, when an unknown
+            
            </Text>
+         
         </View>
+        {/* {console.log("hshs",this.state.name)} */}
         {this.state.name.map((item,index)=>{
              return(
               <View style={styles.uploadview}>
@@ -287,27 +366,21 @@ async selectOneFile(value,index) {
                  <Icon name={this.state.icon} color='red' style={styles.user} />
                 }
               </View>
-       
             )    
          }) 
          }  
-         <View style={styles.botton}>
-            <TouchableOpacity 
-             onPress={()=>  navigation.navigate("Apply")}
-            style={styles.submit}>
+
+        <TouchableOpacity
+          onPress={()=> this.onSignUp()   }
+          style={styles.submit}>
                     <Text style={{color:'white'}}>
-                        Back 
+                      upload
                     </Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-             onPress={()=> this.onSignUp()}
-              style={styles.submit}>
-                    <Text style={{color:'white'}}>
-                        Next Step 
-                    </Text>
-            </TouchableOpacity> 
-        </View> 
-      </ScrollView>
+        </TouchableOpacity> 
+        
+      </View>
     )
+  }
  }};
 export default HelloWorldApp
+

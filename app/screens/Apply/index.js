@@ -11,8 +11,8 @@ import { StyleSheet,
   PermissionsAndroid } from 'react-native';
   import DocumentPicker from 'react-native-document-picker';
   import ImagePicker from 'react-native-image-picker';
-import styles from "./styles";
-import axios from 'axios';
+  import styles from "./styles";
+  import axios from 'axios';
 
 
 const AunthOne ='https://crm.uniatm.org/api/v1/apply/file'
@@ -30,9 +30,10 @@ const statusUrl ='http://crm.uniatm.org/api/v1/apply/file/status'
        passport:'',
        icon:"times-circle",
        data:'',
-       checkStatus: false ,
+       checkStatus: true ,
        loadingStatus: true,
-       stau:''
+       stau:'',
+       disable:false
  
 
    }
@@ -52,7 +53,7 @@ stausCheck=(idValue)=>{
    console.log("response data",responseData)
     this.setState({
       loadingStatus:false,
-      checkStatus:responseData.data.status
+      // checkStatus:true
     })
 
    
@@ -83,6 +84,10 @@ _retrieveData = async () => {
   };
  
    onSignUp(){
+    {this.setState({
+      disable: true
+    })}
+    
     const { navigation } = this.props;
       const data = new FormData();
         data.append('user_id',8); // you can append anyone.
@@ -90,21 +95,6 @@ _retrieveData = async () => {
           uri: this.state.slc,
           type: 'image/jpeg', // or photo.type
           name: 'slc'
-          });
-        data.append('plus_two_file	', {
-          uri: this.state.plustwo,
-          type: 'image/jpeg', // or photo.type
-          name: 'plusTwo'
-          });
-        data.append('cv	', {
-          uri: this.state.cv,
-          type: 'image/jpeg', // or photo.type
-          name: 'cv'
-          });
-        data.append('other_one	', {
-          uri: this.state.passport,
-          type: 'image/jpeg', // or photo.type
-          name: 'passport'
           });
 
           // console.log("pass valur",data)
@@ -276,10 +266,14 @@ async selectOneFile(value,index) {
         <ActivityIndicator size="large"></ActivityIndicator>
       )
     }
-    else if(this.state.checkStatus){
+    else if(this.state.checkStatus== true){
+      // {this.setState({
+      //   disable:false
+      // })}
       return(
         <TouchableOpacity
           onPress={()=>
+            
           this.props.navigation.navigate("Form") }
           style={styles.submit}>
                   <Text style={{color:'white'}}>
@@ -295,7 +289,7 @@ async selectOneFile(value,index) {
           <Text style={{
             fontSize:30,fontWeight:'bold'
           }
-          }>Heading </Text>
+          }>verification 1 </Text>
         </View>
         <View style={styles.description}>
           <Text>Lorem Ipsum is simply dummy text 
@@ -332,6 +326,7 @@ async selectOneFile(value,index) {
          }  
 
         <TouchableOpacity
+        disabled={this.state.disable}
           onPress={()=> this.onSignUp()   }
           style={styles.submit}>
                     <Text style={{color:'white'}}>

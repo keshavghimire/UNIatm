@@ -40,6 +40,9 @@ import Form from "@screens/form";
 import Notelgbl from "@screens/form/noteligible";
 import File from "@screens/Fileupload";
 import collegeByCategory from "@screens/collegeByCategory";
+import Payment from "@screens/payment";
+
+
 
 
 
@@ -220,6 +223,9 @@ const StackNavigator = createStackNavigator(
          },
          collegeByCategory:{
             screen:collegeByCategory  
+         },
+         Payment:{
+            screen:Payment  
          }
     },
     {

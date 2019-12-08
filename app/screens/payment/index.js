@@ -11,7 +11,7 @@ export default class index extends Component {
   render() {
     return (
       <View>
-        <Text> index </Text>
+        <Text> payment </Text>
       </View>
     );
   }
