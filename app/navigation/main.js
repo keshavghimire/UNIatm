@@ -225,7 +225,10 @@ const StackNavigator = createStackNavigator(
             screen:collegeByCategory  
          },
          Payment:{
-            screen:Payment  
+            screen:Payment ,
+            navigationOptions:{
+                title:"payment"
+            }
          }
     },
     {

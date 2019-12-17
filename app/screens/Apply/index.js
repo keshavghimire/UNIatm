@@ -21,16 +21,12 @@ const statusUrl ='http://crm.uniatm.org/api/v1/apply/file/status'
  class HelloWorldApp extends Component {
  
    state={
-       name:[{name:"slc"}
-      //  ,{name:"+2"},{name:"passport"},{name:"cv"}
+       name:[{name:"photo/File"}
       ],
-       slc:'',
-       plustwo:'',
-       cv:'',
-       passport:'',
+       lastEdu:'',
        icon:"times-circle",
        data:'',
-       checkStatus: true ,
+       checkStatus: false ,
        loadingStatus: true,
        stau:'',
        disable:false
@@ -39,6 +35,7 @@ const statusUrl ='http://crm.uniatm.org/api/v1/apply/file/status'
    }
    componentDidMount(){
     this._retrieveData();
+   
     
     
 }
@@ -50,10 +47,11 @@ stausCheck=(idValue)=>{
   axios.post(statusUrl,data).then((response) => {
   
    const responseData = JSON.parse(JSON.stringify(response))
-   console.log("response data",responseData)
+   AsyncStorage.setItem('status',responseData.data.status)
+   console.log(responseData.data.status)
     this.setState({
       loadingStatus:false,
-      // checkStatus:true
+      checkStatus:responseData.data.status
     })
 
    
@@ -63,8 +61,6 @@ stausCheck=(idValue)=>{
     console.log(error);
   });
 }
-
-
 _retrieveData = async () => {
     try {
       const value = await AsyncStorage.getItem('userData');
@@ -72,27 +68,26 @@ _retrieveData = async () => {
        const jsonValue = JSON.parse(value);
        const id = jsonValue.ids;
        this.stausCheck(id);
-
-
        this.setState({
             data:JSON.parse(value)})
       }
     } catch (error) {
-      // Error retrieving data
+     console.log(error)
      
     }
   };
  
    onSignUp(){
-    {this.setState({
+    {
+      this.setState({
       disable: true
     })}
     
     const { navigation } = this.props;
       const data = new FormData();
-        data.append('user_id',8); // you can append anyone.
-        data.append('slc_file', {
-          uri: this.state.slc,
+        data.append('user_id',this.state.data.ids); // you can append anyone.
+        data.append('other_one', {
+          uri: this.state.lastEdu,
           type: 'image/jpeg', // or photo.type
           name: 'slc'
           });
@@ -139,27 +134,10 @@ async selectOneFile(value,index) {
     array.status = "true"
     this.state.name = Object.assign([],this.state.name)     
  
-                console.log("array index",array)
-
-                    switch(value){
-                      case "slc":
-                          this.setState({ slc:data });
-                          
-                          break;
-                      case "+2":
-                            this.setState({plustwo:data});
-                            break;
-                      case "cv":
-                          this.setState({ cv:data });
-                          break; 
-                      case "passport":
-                          this.setState({ passport:data });
-                          
-                          break; 
-                      default:
-                        break;    
-                
-                    }
+        console.log("array index",array)
+        this.setState({
+          lastEdu:data
+        })
 
    
   } catch (err) {
@@ -224,28 +202,10 @@ async selectOneFile(value,index) {
              this.state.name = Object.assign([],this.state.name)     
           
           console.log("array index",array)
-
-              switch(value){
-                case "slc":
-                    this.setState({ slc:source });
-                   
-                    break;
-                case "+2":
-                     this.setState({plustwo:source});
-                     break;
-                case "cv":
-                    this.setState({ cv:source });
-                    break; 
-                case "passport":
-                    this.setState({ passport:source });
-                   
-                    break; 
-                default:
-                  break;    
-          
-              }
-            }
-        });
+              this.setState({
+                lastEdu:source
+              })
+}});
         console.log('You can use the camera');
       } else {
         console.log('Camera permission denied');
@@ -253,8 +213,6 @@ async selectOneFile(value,index) {
     } catch (err) {
       console.warn(err);
     }
-  
-
  
 }
    
@@ -271,15 +229,11 @@ async selectOneFile(value,index) {
       //   disable:false
       // })}
       return(
-        <TouchableOpacity
-          onPress={()=>
+      
             
-          this.props.navigation.navigate("Form") }
-          style={styles.submit}>
-                  <Text style={{color:'white'}}>
-                     Next Step 
-                   </Text>
-          </TouchableOpacity>
+          this.props.navigation.navigate("Form") 
+          
+         
       )
     }else{
     return (

@@ -37,7 +37,7 @@ const statusUrl ='http://crm.uniatm.org/api/v1/apply/file/status'
       other:'',
       icon:"times-circle",
        data:'',
-       checkStatus:false ,
+       checkStatus:'' ,
        loadingStatus: true,
        stau:''
  
@@ -59,7 +59,7 @@ stausCheck=(idValue)=>{
    console.log("response data",responseData)
     this.setState({
       loadingStatus:false,
-      checkStatus:true
+      checkStatus:responseData.data.status
     })
 
    
@@ -92,18 +92,22 @@ _retrieveData = async () => {
    onSignUp(){
     const { navigation } = this.props;
       const data = new FormData();
-        data.append('user_id',8); // you can append anyone.
-      
+        data.append('user_id',this.state.data.ids); // you can append anyone.
         data.append('plus_two_file	', {
           uri: this.state.plustwo,
           type: 'image/jpeg', // or photo.type
           name: 'plusTwo'
           });
+          data.append('other_two', {
+            uri: this.state.passport,
+            type: 'image/jpeg', // or photo.type
+            name: 'password'
+            });
        
 
           // console.log("pass valur",data)
     axios.post(AunthOne,data).then(function (response) {
-    console.log("file text",response);
+      console.log("file text",response);
       const token = response.data.data.token
       AsyncStorage.setItem('tokenSignup',token)
      

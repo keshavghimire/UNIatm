@@ -1,21 +1,21 @@
 import React, { Component } from "react";
-import { View, ScrollView, TextInput, TouchableOpacity } from "react-native";
+import { View, ScrollView, TextInput, TouchableOpacity,AsyncStorage } from "react-native";
 import { BaseStyle, BaseColor, Images } from "@config";
 import { Image, Header, SafeAreaView, Icon, Text, Button } from "@components";
 import styles from "./styles";
 
 // Load sample data
 import { UserData } from "@data";
-
+const statusUrl='http://crm.uniatm.org/api/v1/student/edit-profile'
 export default class ProfileEdit extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            id: UserData[0].id,
-            name: UserData[0].name,
-            email: UserData[0].email,
-            address: UserData[0].address,
+            id:'',
+            name:'',
+            email:'',
+            address:'',
             image: UserData[0].image,
             loading: false,
             data:''
@@ -25,26 +25,62 @@ export default class ProfileEdit extends Component {
         this._retrieveData();
         
     }
+    stausCheck=()=>{
+  
+        const data={
+          
+            user_id:idValue,
+            name:this.state.name,
+            email:this.state.email,
+            address:this.state.address,
+            
+        }
+        axios.post(statusUrl,data).then((response) => {
+        
+         const responseData = JSON.parse(JSON.stringify(response))
+         console.log("response data",responseData)
+          this.setState({
+            loadingStatus:false,
+            checkStatus:true
+          })
+      
+         
+      
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      }
+      
+    
+    
 
     /**
      * @description Simple logout with Redux
      * @author Passion UI <passionui.com>
      * @date 2019-09-01
      */
-
     _retrieveData = async () => {
         try {
           const value = await AsyncStorage.getItem('userData');
+          
           if (value !== null) {
-              alert(value)
+           const data=JSON.parse(value);
            this.setState({
-                data:JSON.parse(value)})
+                
+                id:data.ids,
+                name:data.name,
+                email:data.email,
+                address:data.address
+            })
+               
             
            console.log(value);
           }
         } catch (error) {
+            //alert("value")
           // Error retrieving data
-          alert("talalko")
+         
         }
       };
     render() {
@@ -89,7 +125,7 @@ export default class ProfileEdit extends Component {
                             autoCorrect={false}
                             placeholder="Input ID"
                             placeholderTextColor={BaseColor.grayColor}
-                            value={this.state.id}
+                            value={"@"+this.state.name}
                             selectionColor={BaseColor.primaryColor}
                         />
                         <View style={styles.contentTitle}>
@@ -99,11 +135,12 @@ export default class ProfileEdit extends Component {
                         </View>
                         <TextInput
                             style={BaseStyle.textInput}
-                            onChangeText={text => this.setState({ name: text })}
+                           
                             autoCorrect={false}
                             placeholder="Input Name"
                             placeholderTextColor={BaseColor.grayColor}
                             value={this.state.name}
+                            onChangeText={text => this.setState({ name: text })}
                             selectionColor={BaseColor.primaryColor}
                         />
                         <View style={styles.contentTitle}>
