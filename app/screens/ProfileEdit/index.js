@@ -1,12 +1,14 @@
 import React, { Component } from "react";
-import { View, ScrollView, TextInput, TouchableOpacity,AsyncStorage } from "react-native";
+import { View, ScrollView, TextInput, TouchableOpacity,AsyncStorage ,PermissionsAndroid} from "react-native";
+import ImagePicker from 'react-native-image-picker';
 import { BaseStyle, BaseColor, Images } from "@config";
 import { Image, Header, SafeAreaView, Icon, Text, Button } from "@components";
 import styles from "./styles";
+import axios from "axios"
 
 // Load sample data
 import { UserData } from "@data";
-const statusUrl='http://crm.uniatm.org/api/v1/student/edit-profile'
+const Editprofil='http://crm.uniatm.org/api/v1/student/edit-profile'
 export default class ProfileEdit extends Component {
     constructor(props) {
         super(props);
@@ -18,34 +20,32 @@ export default class ProfileEdit extends Component {
             address:'',
             image: UserData[0].image,
             loading: false,
-            data:''
+            data:'',
+            photo:''
         };
     }
     componentDidMount(){
         this._retrieveData();
         
     }
-    stausCheck=()=>{
-  
+    _editprofil=()=>{
+        alert(this.state.name)
         const data={
-          
-            user_id:idValue,
+            user_id:this.state.id,
             name:this.state.name,
             email:this.state.email,
             address:this.state.address,
             
         }
-        axios.post(statusUrl,data).then((response) => {
-        
-         const responseData = JSON.parse(JSON.stringify(response))
-         console.log("response data",responseData)
-          this.setState({
-            loadingStatus:false,
-            checkStatus:true
-          })
-      
-         
-      
+        axios.post(Editprofil,data).then((response) => {
+         const productToBeSaved = { 
+            'ids':response.data.data.id,
+            'name':response.data.data.name,
+            'type':response.data.data.type ,
+            'email':response.data.data.email ,
+          }
+         // alert(productToBeSaved)
+       AsyncStorage.setItem('userData',JSON.stringify(productToBeSaved))
         })
         .catch((error) => {
           console.log(error);
@@ -63,18 +63,14 @@ export default class ProfileEdit extends Component {
     _retrieveData = async () => {
         try {
           const value = await AsyncStorage.getItem('userData');
-          
           if (value !== null) {
            const data=JSON.parse(value);
-           this.setState({
-                
+           this.setState({ 
                 id:data.ids,
                 name:data.name,
                 email:data.email,
                 address:data.address
             })
-               
-            
            console.log(value);
           }
         } catch (error) {
@@ -83,6 +79,63 @@ export default class ProfileEdit extends Component {
          
         }
       };
+
+      async _camara() {
+        try {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.CAMERA,
+            {
+              title: 'Cool Photo App Camera Permission',
+              message:
+                'Cool Photo App needs access to your camera ' +
+                'so you can take awesome pictures.',
+              buttonNeutral: 'Ask Me Later',
+              buttonNegative: 'Cancel',
+              buttonPositive: 'OK',
+            },
+          );
+          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            const options = {
+              quality: 1.0,
+              maxWidth: 500,
+              maxHeight: 500,
+              storageOptions: {
+                skipBackup: true
+              }
+            };
+            ImagePicker.showImagePicker(options, (response) => {
+              console.log('Response = ', response);
+        
+              if (response.didCancel) {
+                console.log('User cancelled photo picker');
+              }
+              else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+              }
+              else if (response.customButton) {
+                console.log('User tapped custom button: ', response.customButton);
+              }
+              else {
+                let source =  response.uri
+        
+                // You can also display the image using data:
+                // let source = { uri: 'data:image/jpeg;base64,' + response.data };
+                  this.setState({
+                    photo:source
+                  })
+    }});
+            console.log('You can use the camera');
+          } else {
+            console.log('Camera permission denied');
+          }
+        } catch (err) {
+          console.warn(err);
+        }
+     
+    }
+
+
+
     render() {
         const { navigation } = this.props;
         return (
@@ -108,12 +161,13 @@ export default class ProfileEdit extends Component {
                 />
                 <ScrollView>
                     <View style={styles.contain}>
-                        <View>
+                        <TouchableOpacity
+                        onPress={()=>this._camara()}>
                             <Image
-                                source={this.state.image}
+                                source={this.state.photo == '' ? this.state.image : {uri:this.state.photo}}
                                 style={styles.thumb}
                             />
-                        </View>
+                        </TouchableOpacity>
                         <View style={styles.contentTitle}>
                             <Text headline semibold>
                                 Account
@@ -181,9 +235,11 @@ export default class ProfileEdit extends Component {
                         loading={this.state.loading}
                         full
                         onPress={() => {
+                            this._editprofil()
                             this.setState(
                                 {
-                                    loading: true
+                                    loading: true,
+                                    
                                 },
                                 () => {
                                     setTimeout(() => {

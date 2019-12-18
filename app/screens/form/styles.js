@@ -58,13 +58,15 @@ export default StyleSheet.create({
        margin:20
       },
       submit:{
+        left:"35%",
         height:40,
+        margin:20,
         width:100,
         backgroundColor:'#929291',
         justifyContent:'center',
         alignItems:'center',
         borderRadius:5,
-              },
+       },
       botton:{
           margin:10,
           flexDirection:"row",

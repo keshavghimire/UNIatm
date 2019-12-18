@@ -29,7 +29,8 @@ const statusUrl ='http://crm.uniatm.org/api/v1/apply/file/status'
        checkStatus: false ,
        loadingStatus: true,
        stau:'',
-       disable:false
+       loading:false,
+      
  
 
    }
@@ -48,7 +49,7 @@ stausCheck=(idValue)=>{
   
    const responseData = JSON.parse(JSON.stringify(response))
    AsyncStorage.setItem('status',responseData.data.status)
-   console.log(responseData.data.status)
+   
     this.setState({
       loadingStatus:false,
       checkStatus:responseData.data.status
@@ -78,31 +79,34 @@ _retrieveData = async () => {
   };
  
    onSignUp(){
-    {
-      this.setState({
-      disable: true
-    })}
-    
     const { navigation } = this.props;
-      const data = new FormData();
-        data.append('user_id',this.state.data.ids); // you can append anyone.
-        data.append('other_one', {
-          uri: this.state.lastEdu,
-          type: 'image/jpeg', // or photo.type
-          name: 'slc'
-          });
+    if(this.state.lastEdu.length != 0){
+      alert("Your Document Is Being Verified,Plsease Check After Sometimes")
+      this.setState({loading:true})
+        const data = new FormData();
+          data.append('user_id',this.state.data.ids); // you can append anyone.
+          data.append('other_one', {
+            uri: this.state.lastEdu,
+            type: 'image/jpeg', // or photo.type
+            name: 'slc'
+            });
 
-          // console.log("pass valur",data)
-    axios.post(AunthOne,data).then(function (response) {
-    console.log("file text",response);
-      const token = response.data.data.token
-      AsyncStorage.setItem('tokenSignup',token)
-     
+            // console.log("pass valur",data)
+      axios.post(AunthOne,data).then(function (response) {
+      console.log("file text",response);
+        const token = response.data.data.token
+        AsyncStorage.setItem('tokenSignup',token)
+      
 
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+}
+else{
+  alert("Plsease Submit your Document.")
+}
+
 }
 
 
@@ -152,8 +156,9 @@ async selectOneFile(value,index) {
     }
   }
 }
+//////========= image picker=======>>>>>
 
-   async _openGallery(value,index) {
+ async _openGallery(value,index) {
    
 
     try {
@@ -221,7 +226,7 @@ async selectOneFile(value,index) {
     const { navigation } = this.props;
     if(this.state.loadingStatus){
       return(
-        <ActivityIndicator size="large"></ActivityIndicator>
+        <ActivityIndicator size="large" style={{flex:1}}></ActivityIndicator>
       )
     }
     else if(this.state.checkStatus== true){
@@ -280,11 +285,11 @@ async selectOneFile(value,index) {
          }  
 
         <TouchableOpacity
-        disabled={this.state.disable}
+         disabled={this.state.loading}
           onPress={()=> this.onSignUp()   }
           style={styles.submit}>
                     <Text style={{color:'white'}}>
-                      upload
+                    {this.state.loading?'Loading..':'Upload'}
                     </Text>
         </TouchableOpacity> 
         

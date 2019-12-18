@@ -270,12 +270,12 @@ export default class PlaceDetail extends Component {
                                 <Text title1 semibold>
                                 {this.props.navigation.state.params.name}
                                 </Text>
-                                <Icon
+                                {/* <Icon
                                     name="heart"
                                     color={BaseColor.lightPrimaryColor}
                                     size={24}
                                     style={{left:-20,top:10,}}
-                                />
+                                /> */}
                             </View>
                             <View style={styles.lineSpace}>
                                 <View>
@@ -308,7 +308,7 @@ export default class PlaceDetail extends Component {
                                     </View>
                                 </View>
                                
-                                <Tag status>chat </Tag>
+                                
                             </View>
                             {information.map(item => {
                                 return (

@@ -181,25 +181,6 @@ class Profile extends Component {
                                     />
                                 </View>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.profileItem}>
-                                <Text body1>Whislist</Text>
-                                <View
-                                    style={{
-                                        flexDirection: "row",
-                                        alignItems: "center"
-                                    }}
-                                >
-                                    <Text body1 grayColor>
-                                        109
-                                    </Text>
-                                    <Icon
-                                        name="angle-right"
-                                        size={18}
-                                        color={BaseColor.primaryColor}
-                                        style={{ marginLeft: 5 }}
-                                    />
-                                </View>
-                            </TouchableOpacity>
                             <View style={styles.profileItem}>
                                 <Text body1>Notification</Text>
                                 <Switch

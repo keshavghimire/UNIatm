@@ -114,23 +114,23 @@ const routeConfigs = {
             }
         })
     },
-    Whislist: {
-        screen: Whislist,
-        navigationOptions: ({ navigation }) => ({
-            title: "Whislist",
-            tabBarIcon: ({ focused, tintColor }) => {
-                return (
-                    <Icon
-                        solid
-                        color={tintColor}
-                        name="bookmark"
-                        size={20}
-                        solid
-                    />
-                );
-            }
-        })
-    },
+    // Whislist: {
+    //     screen: Whislist,
+    //     navigationOptions: ({ navigation }) => ({
+    //         title: "Whislist",
+    //         tabBarIcon: ({ focused, tintColor }) => {
+    //             return (
+    //                 <Icon
+    //                     solid
+    //                     color={tintColor}
+    //                     name="bookmark"
+    //                     size={20}
+    //                     solid
+    //                 />
+    //             );
+    //         }
+    //     })
+    // },
     Profile: {
         screen: Profile,
         navigationOptions: ({ navigation }) => ({
@@ -225,11 +225,9 @@ const StackNavigator = createStackNavigator(
             screen:collegeByCategory  
          },
          Payment:{
-            screen:Payment ,
-            navigationOptions:{
-                title:"payment"
-            }
+            screen:Payment 
          }
+         
     },
     {
         headerMode: "none",

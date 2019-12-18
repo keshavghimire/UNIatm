@@ -57,9 +57,7 @@ const Verification="https://khalti.com/api/v2/payment/verify/";
                token:restoken,
                   step:1
                  })
-            
-              
-          }
+           }
         } catch(err){
            alert(responseData.detail || responseData.mobile[0] || "Please Try Again")
         }

@@ -23,7 +23,7 @@ const statusUrl ='http://crm.uniatm.org/api/v1/apply/file/status'
  
    state={
       name:[
-        // {name:"slc"},
+        {name:"slc"},
         {name:"+2"},{name:"passport"},
       // {name:"cv"},{name:"Bachelor"},{name:"master"},{name:"Photo"},{name:"other"}
     ],
@@ -36,10 +36,12 @@ const statusUrl ='http://crm.uniatm.org/api/v1/apply/file/status'
       Photo:'',
       other:'',
       icon:"times-circle",
-       data:'',
-       checkStatus:'' ,
-       loadingStatus: true,
-       stau:''
+      data:'',
+      //checkStatus:'' ,
+      loadingStatus: true,
+      loading:false,
+      checkElligible:'',
+      stau:''
  
 
    }
@@ -53,17 +55,19 @@ stausCheck=(idValue)=>{
   const data={
     user_id:idValue
   }
-  axios.post(statusUrl,data).then((response) => {
-  
+  axios.post(statusUrl,data).then((response) => { 
    const responseData = JSON.parse(JSON.stringify(response))
    console.log("response data",responseData)
+   console.log("status",responseData.data.status)
+   alert(responseData.data.data.student.elligible)
     this.setState({
-      loadingStatus:false,
-      checkStatus:responseData.data.status
+      loadingStatus:false, 
+      checkStatus:responseData.data.status,
+      checkElligible:responseData.data.data.student.elligible
     })
 
    
-
+      
   })
   .catch((error) => {
     console.log(error);
@@ -90,34 +94,46 @@ _retrieveData = async () => {
   };
  
    onSignUp(){
-    const { navigation } = this.props;
-      const data = new FormData();
-        data.append('user_id',this.state.data.ids); // you can append anyone.
-        data.append('plus_two_file	', {
-          uri: this.state.plustwo,
-          type: 'image/jpeg', // or photo.type
-          name: 'plusTwo'
+    
+     const {slc,passport,plustwo} = this.state
+     if( slc.length != 0 && passport.length != 0 && plustwo.length !=0){
+      alert("Your Document Are Being Verified,Plsease Check After Sometimes")
+       this.setState({loading:true})
+            const { navigation } = this.props;
+              const data = new FormData();
+                data.append('user_id',this.state.data.ids); // you can append anyone.
+                  data.append('slc_file', {
+                    uri: this.state.slc,
+                    type: 'image/jpeg', // or photo.type
+                    name: 'slc'
+                    });
+                  data.append('plus_two_file', {
+                    uri: this.state.plustwo,
+                    type: 'image/jpeg', // or photo.type
+                    name: 'plusTwo'
+                    });
+                  data.append('other_two', {
+                    uri: this.state.passport,
+                    type: 'image/jpeg', // or photo.type
+                    name: 'password'
+                    });
+             // console.log("pass valur",data)
+            axios.post(AunthOne,data).then(function (response) {
+              console.log("file text",response);
+              
+              const token = response.data.data.token
+              AsyncStorage.setItem('tokenSignup',token)
+            
+
+          })
+          .catch(function (error) {
+            console.log(error);
           });
-          data.append('other_two', {
-            uri: this.state.passport,
-            type: 'image/jpeg', // or photo.type
-            name: 'password'
-            });
-       
-
-          // console.log("pass valur",data)
-    axios.post(AunthOne,data).then(function (response) {
-      console.log("file text",response);
-      const token = response.data.data.token
-      AsyncStorage.setItem('tokenSignup',token)
-     
-
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
-}
-
+        }
+        else{
+          alert("Plsease Submit All The Documents.")
+        }
+   }
 
 
 async selectOneFile(value,index) {
@@ -303,33 +319,26 @@ async selectOneFile(value,index) {
     const { navigation } = this.props;
     if(this.state.loadingStatus){
       return(
-        <ActivityIndicator size="large"></ActivityIndicator>
+        <ActivityIndicator size="large" style={{flex:1}}></ActivityIndicator>
       )
     }
-    else if(this.state.checkStatus== true){
-      return(
-        <TouchableOpacity
-          onPress={()=>
-          this.props.navigation.navigate("Payment") }
-          style={styles.submit}>
-                  <Text style={{color:'white'}}>
-                     Next Step 
-                   </Text>
-          </TouchableOpacity>
-      )
-    }
-    else if(this.state.checkStatus== false){
-      return(
-        <TouchableOpacity
-          onPress={()=>
-          this.props.navigation.navigate("Notelgbl") }
-          style={styles.submit}>
-                  <Text style={{color:'white'}}>
-                     Next Step 
-                   </Text>
-          </TouchableOpacity>
-      )
-    }
+    else if(this.state.checkStatus== true){ 
+    return(
+      <View>
+         {
+                (this.state.checkElligible == 'yes')?
+                    this.props.navigation.navigate("Payment") 
+            :
+                (this.state.checkElligible== 'no')
+            ?
+              this.props.navigation.navigate("Notelgbl") 
+            :
+              null
+         }
+        
+      </View>
+    )
+      }
     else{
     return (
       
@@ -374,13 +383,14 @@ async selectOneFile(value,index) {
          }) 
          }  
 
-        <TouchableOpacity
-          onPress={()=> this.onSignUp()   }
+      <TouchableOpacity
+          onPress={()=> this.onSignUp()}
+          disabled={this.state.loading}
           style={styles.submit}>
                     <Text style={{color:'white'}}>
-                      upload
+                      {this.state.loading?'Loading..':'Upload'}
                     </Text>
-        </TouchableOpacity> 
+        </TouchableOpacity>
         
       </View>
     )
