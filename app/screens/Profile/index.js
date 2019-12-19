@@ -47,8 +47,8 @@ class Profile extends Component {
              // alert(value)
            this.setState({
                 data:JSON.parse(value)})
-            
            console.log(value);
+           alert(JSON.stringify(this.state.data))
           }
         } catch (error) {
           // Error retrieving data
@@ -118,7 +118,7 @@ class Profile extends Component {
                 <ScrollView>
                     <View style={styles.contain}>
                         <ProfileDetail
-                            image={userData.image}
+                            image={this.state.data.photo ? {uri:this.state.data.photo}: userData.image }
                             textFirst={this.state.data.name}
                             point={userData.point}
                             textSecond={this.state.data.type}

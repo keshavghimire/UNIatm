@@ -29,13 +29,12 @@ export default class ProfileEdit extends Component {
         
     }
     _editprofil=()=>{
-        alert(this.state.name)
         const data={
             user_id:this.state.id,
             name:this.state.name,
             email:this.state.email,
             address:this.state.address,
-            
+            //photo:this.state.photo
         }
         axios.post(Editprofil,data).then((response) => {
          const productToBeSaved = { 
@@ -43,9 +42,11 @@ export default class ProfileEdit extends Component {
             'name':response.data.data.name,
             'type':response.data.data.type ,
             'email':response.data.data.email ,
+            'photo':this.state.photo
           }
-         // alert(productToBeSaved)
+         
        AsyncStorage.setItem('userData',JSON.stringify(productToBeSaved))
+       alert("Please re-load App")
         })
         .catch((error) => {
           console.log(error);
@@ -69,7 +70,8 @@ export default class ProfileEdit extends Component {
                 id:data.ids,
                 name:data.name,
                 email:data.email,
-                address:data.address
+                address:data.address,
+                photo:data.photo
             })
            console.log(value);
           }
