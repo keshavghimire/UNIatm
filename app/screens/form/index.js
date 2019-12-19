@@ -37,7 +37,7 @@ const statusUrl ='http://crm.uniatm.org/api/v1/apply/file/status'
       other:'',
       icon:"times-circle",
       data:'',
-      //checkStatus:'' ,
+      checkStatus:'' ,
       loadingStatus: true,
       loading:false,
       checkElligible:'',
@@ -59,10 +59,9 @@ stausCheck=(idValue)=>{
    const responseData = JSON.parse(JSON.stringify(response))
    console.log("response data",responseData)
    console.log("status",responseData.data.status)
-   alert(responseData.data.data.student.elligible)
     this.setState({
       loadingStatus:false, 
-      checkStatus:responseData.data.status,
+      checkStatus:false,
       checkElligible:responseData.data.data.student.elligible
     })
 

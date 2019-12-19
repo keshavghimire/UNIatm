@@ -24,9 +24,7 @@ export default class Category extends Component {
     };
   } componentDidMount(){
     this.category();
-    
- 
-   }
+  }
    category(){
      fetch('https://crm.uniatm.org/api/v1/courses').then((response) =>response.json())
      .then((responsejson) => {
@@ -38,9 +36,6 @@ export default class Category extends Component {
  
      })
    }
-   
-     
-
   
   renderItem(item, index) {
     const { navigation } = this.props;

@@ -85,6 +85,7 @@ export default class ChangePassword extends Component {
                                 },
                                 () => {
                                     setTimeout(() => {
+                                        alert("This process is currently unavailable")
                                         navigation.goBack();
                                     }, 500);
                                 }

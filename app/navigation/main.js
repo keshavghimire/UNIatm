@@ -10,7 +10,7 @@ import { store } from "app/store";
 import Home from "@screens/Home";
 import Category from "@screens/Category";
 import Place from "@screens/Place";
-import Whislist from "@screens/Whislist";
+//import Whislist from "@screens/Whislist";
 import Profile from "@screens/Profile";
 
 /* Modal Screen only affect iOS */

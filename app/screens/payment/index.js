@@ -129,7 +129,7 @@ const Verification="https://khalti.com/api/v2/payment/verify/";
             //     3:response.user.name
 
             // }
-            //       axios .post(Verification, data)
+            //       axios .post(userVerified, data)
             //       .then(response => {
             //           console.log(response.data);
         

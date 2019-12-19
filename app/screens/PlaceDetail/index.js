@@ -531,8 +531,6 @@ class College extends Component {
         
         return (
            <Category/>
-
-           
         );
     }
 }
